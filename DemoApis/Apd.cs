@@ -13,5 +13,6 @@ namespace DemoApis
         }
         public DbSet<Department>departments { get; set; }
         public DbSet<Employee>employees { get; set; }
+        public DbSet<Register> registers { get; set; }
     }
 }

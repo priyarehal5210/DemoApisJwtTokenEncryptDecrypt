@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
 using DemoApis.Dto;
 using DemoApis.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,19 +10,23 @@ namespace DemoApis.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
     public class EmployeeController : Controller
     {
         private readonly Apd con;
         private readonly IMapper _mapper;
-        public EmployeeController(Apd conn, IMapper mapper)
+        IDataProtector _dataProtector;
+        public EmployeeController(Apd conn, IMapper mapper,IDataProtectionProvider dataProtectionProvider)
         {
             con = conn;
             _mapper = mapper;
+            _dataProtector = dataProtectionProvider.CreateProtector(GetType().FullName);
         }
 
         [HttpGet]
         public IActionResult getemp()
         {
+
             return Ok(con.employees.Include(d => d.department).ToList());
         }
         [HttpPost]

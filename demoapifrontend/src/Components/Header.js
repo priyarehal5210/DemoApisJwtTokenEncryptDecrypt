@@ -9,6 +9,7 @@ function Header() {
             <Link to="/employee" className="nav-link text-white text-captalize">
               Employee
             </Link>
+            <Link to="/register"  className="nav-link text-white text-captalize">register</Link>
           </ul>
         </div>
       </nav>

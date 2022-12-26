@@ -3,6 +3,7 @@ import './App.css';
 import Header from './Components/Header';
 import { Route, Routes } from 'react-router-dom';
 import Employee from './Components/Employee';
+import Register from './Components/Register';
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
      <Header/>
      <Routes>
       <Route path='/employee' element={<Employee/>}></Route>
+      <Route path='/register'element={<Register/>}></Route>
      </Routes>
     </div>
   );
