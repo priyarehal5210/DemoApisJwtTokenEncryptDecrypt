@@ -32,6 +32,7 @@ builder.Services.AddCors(options =>
 
 });
 builder.Services.AddDataProtection();
+
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 //JWT implementation
 var appsettingssection = builder.Configuration.GetSection("AppSettings");

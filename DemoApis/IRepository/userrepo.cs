@@ -30,7 +30,6 @@ namespace DemoApis.IRepository
                 Subject = new ClaimsIdentity(new Claim[]
                 {
                     new Claim(ClaimTypes.Name,userInDb.Id.ToString()),
-                    new Claim(ClaimTypes.Role,userInDb.role)
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key)

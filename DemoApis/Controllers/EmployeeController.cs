@@ -20,14 +20,23 @@ namespace DemoApis.Controllers
         {
             con = conn;
             _mapper = mapper;
-            _dataProtector = dataProtectionProvider.CreateProtector(GetType().FullName);
+            _dataProtector = dataProtectionProvider.CreateProtector("this is a protector");
         }
 
         [HttpGet]
         public IActionResult getemp()
         {
-
-            return Ok(con.employees.Include(d => d.department).ToList());
+            var employees = con.employees.Include(d => d.department).ToList();
+            //data protection
+            var output = employees.Select(
+                e => new
+                {
+                    id = _dataProtector.Protect(e.Id.ToString()),
+                    name = _dataProtector.Protect(e.Name),
+                    e.department
+                });
+            return Ok(output);
+            //return Ok(con.employees.Include(d => d.department).ToList());
         }
         [HttpPost]
         public IActionResult addemp([FromBody] EmployeesDto employeesDto)

@@ -21,8 +21,16 @@ namespace DemoApis.Controllers
         [HttpGet]
         public IActionResult getusers()
         {
-
-            return Ok(_con.registers.ToList());
+            var allusers = _con.registers.ToList();
+            var output = allusers.Select(
+                e => new
+                {
+                    e.Id,
+                    passoword = _dataProtector.Protect(e.password),
+                    confirmpassword=_dataProtector.Protect(e.confirmpassword)
+                }); 
+            return Ok(output);
+            //return Ok(_con.registers.ToList());
         }
         [HttpPost]
         public IActionResult adduser([FromBody] Register register)
@@ -34,11 +42,9 @@ namespace DemoApis.Controllers
             }
             if (register.password == register.confirmpassword)
             {
-
                 _con.registers.Add(register);
                 _con.SaveChanges();
                 return Ok(new { message = "registered succesfully!!" });
-
             }
             return BadRequest(new { message = "password should match each other." });
         }
