@@ -1,5 +1,6 @@
 using DemoApis;
 using DemoApis.IRepository;
+using DemoApis.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -32,6 +33,7 @@ builder.Services.AddCors(options =>
 
 });
 builder.Services.AddDataProtection();
+builder.Services.AddSingleton<DataProtection>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 //JWT implementation

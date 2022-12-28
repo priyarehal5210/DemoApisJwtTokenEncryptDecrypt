@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Text;
 
 namespace DemoApis.Controllers
 {
@@ -15,34 +17,34 @@ namespace DemoApis.Controllers
     {
         private readonly Apd con;
         private readonly IMapper _mapper;
-        IDataProtector _dataProtector;
-        public EmployeeController(Apd conn, IMapper mapper,IDataProtectionProvider dataProtectionProvider)
+        private readonly IDataProtector _dataProtector;
+        public EmployeeController(Apd conn, IMapper mapper,IDataProtectionProvider dataProtectionProvider,DataProtection dataProtection)
         {
-            con = conn;
+            _dataProtector = dataProtectionProvider.CreateProtector(dataProtection.key);
+             con = conn;
             _mapper = mapper;
-            _dataProtector = dataProtectionProvider.CreateProtector("this is a protector");
         }
 
         [HttpGet]
         public IActionResult getemp()
         {
-            var employees = con.employees.Include(d => d.department).ToList();
-            //data protection
-            var output = employees.Select(
-                e => new
-                {
-                    id = _dataProtector.Protect(e.Id.ToString()),
-                    name = _dataProtector.Protect(e.Name),
-                    e.department
-                });
+            //var employeelist = con.employees.ToList();
+            //return Ok();
+            var employeelist = con.employees.ToList();
+            var output = employeelist.Select(d => new
+            {
+                id=d.Id,
+                name =decryptname(d.Name),
+                dep=d.department
+            });
             return Ok(output);
-            //return Ok(con.employees.Include(d => d.department).ToList());
         }
         [HttpPost]
         public IActionResult addemp([FromBody] EmployeesDto employeesDto)
         {
             if (employeesDto == null) return BadRequest();
             var empdto = _mapper.Map<EmployeesDto, Employee>(employeesDto);
+            empdto.Name = encryptname(empdto.Name);
             if (empdto == null) return NotFound();
             else
             {
@@ -76,6 +78,18 @@ namespace DemoApis.Controllers
                 return Ok();
             }
         }
-
+        //methods for encrypt 
+        public static string encryptname(string name)
+        {
+            byte[] storename = ASCIIEncoding.ASCII.GetBytes(name);
+            string encryptname = Convert.ToBase64String(storename);
+            return encryptname;
+        }
+        public static string decryptname(string name)
+        {
+            byte[] entname = Convert.FromBase64String(name);
+            string decryptname = ASCIIEncoding.ASCII.GetString(entname);
+            return decryptname;
+        }
     }
 }
