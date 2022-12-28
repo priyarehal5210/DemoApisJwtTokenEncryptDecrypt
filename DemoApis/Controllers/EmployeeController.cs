@@ -78,7 +78,7 @@ namespace DemoApis.Controllers
                 return Ok();
             }
         }
-        //methods for encrypt 
+        //methods for encrypt and decrypt
         public static string encryptname(string name)
         {
             byte[] storename = ASCIIEncoding.ASCII.GetBytes(name);
