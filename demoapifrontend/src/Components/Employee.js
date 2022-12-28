@@ -21,7 +21,7 @@ function Employee() {
   //calling department display api
   const getalldep = () => {
     axios
-      .get("https://localhost:7058/WeatherForecast")
+      .get("https://localhost:7058/api/Employee/Departments")
       .then((e) => {
         setdep(e.data);
       })
@@ -93,7 +93,7 @@ function Employee() {
         // console.log(item)
         <tr>
           <td>{item.name}</td>
-          <td>{item.department.name}</td>
+          <td>{item.department}</td>
           <td>
             <input type="checkbox"
              disabled checked={item.isOkay}/>
@@ -200,7 +200,7 @@ function Employee() {
                 </div>
                 <div class="form-group row">
                   <label class="col text-center textn-capitalize" for="isOkay">
-                    name
+                    isokay
                   </label>
                   <input
                     type="checkbox"

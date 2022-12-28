@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Swashbuckle.AspNetCore.Annotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Xml.Linq;
 
@@ -6,6 +7,7 @@ namespace DemoApis.Models
 {
     public class Employee
     {
+        [SwaggerSchema(ReadOnly = true)]
         public int Id { get; set; }
         public string Name { get; set; }
         [Display(Name = "Department")]

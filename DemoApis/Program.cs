@@ -17,7 +17,7 @@ builder.Services.AddScoped<Iuser, userrepo>();
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c=>c.EnableAnnotations());
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 builder.Services.AddCors(options =>
 {
@@ -32,7 +32,7 @@ builder.Services.AddCors(options =>
 
 
 });
-builder.Services.AddDataProtection();
+//builder.Services.AddDataProtection();
 builder.Services.AddSingleton<DataProtection>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));

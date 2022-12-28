@@ -1,4 +1,6 @@
-﻿namespace DemoApis.Models
+﻿using Swashbuckle.AspNetCore.Annotations;
+
+namespace DemoApis.Models
 {
     public class Department
     {

@@ -23,11 +23,7 @@ namespace DemoApis.Controllers
             this.con = con;
         }
 
-        [HttpGet( "Departments")]
-        public IActionResult getdep()
-        {
-            return Ok(con.departments.ToList());
-        }
+     
 
         [HttpGet("test")]
         public IActionResult test()

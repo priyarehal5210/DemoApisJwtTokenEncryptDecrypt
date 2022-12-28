@@ -17,10 +17,10 @@ namespace DemoApis.Controllers
     {
         private readonly Apd con;
         private readonly IMapper _mapper;
-        private readonly IDataProtector _dataProtector;
+        //private readonly IDataProtector _dataProtector;
         public EmployeeController(Apd conn, IMapper mapper,IDataProtectionProvider dataProtectionProvider,DataProtection dataProtection)
         {
-            _dataProtector = dataProtectionProvider.CreateProtector(dataProtection.key);
+            //_dataProtector = dataProtectionProvider.CreateProtector(dataProtection.key);
              con = conn;
             _mapper = mapper;
         }
@@ -30,14 +30,20 @@ namespace DemoApis.Controllers
         {
             //var employeelist = con.employees.ToList();
             //return Ok();
-            var employeelist = con.employees.ToList();
+            var employeelist = con.employees.Include(dp=>dp.department).ToList();
             var output = employeelist.Select(d => new
             {
-                id=d.Id,
-                name =decryptname(d.Name),
-                dep=d.department
-            });
+                id = d.Id,
+                name = decryptname(d.Name),
+                d.DepartmentId,
+                d.IsOkay
+            }) ;
             return Ok(output);
+        }
+        [HttpGet("Departments")]
+        public IActionResult getdep()
+        {
+            return Ok(con.departments.ToList());
         }
         [HttpPost]
         public IActionResult addemp([FromBody] EmployeesDto employeesDto)
@@ -58,6 +64,7 @@ namespace DemoApis.Controllers
         {
             if (employeesDto == null) return BadRequest();
             var empdto = _mapper.Map<EmployeesDto, Employee>(employeesDto);
+            empdto.Name = encryptname(empdto.Name);
             if (empdto == null) return NotFound();
             else
             {
