@@ -1,9 +1,11 @@
-﻿using DemoApis.Migrations;
+﻿using DemoApis.IRepository;
+using DemoApis.Migrations;
 using DemoApis.Models;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using System.Text;
 
 namespace DemoApis.Controllers
 {
@@ -12,12 +14,13 @@ namespace DemoApis.Controllers
     public class RegisterController : Controller
     {
         private readonly Apd _con;
-        IDataProtector _dataProtector;
-        public RegisterController(Apd con,IDataProtectionProvider protector)
+        private readonly Iuser _iuser;
+        public RegisterController(Apd con, Iuser iuser)
         {
-            _dataProtector = protector.CreateProtector(GetType().FullName);
+            _iuser = iuser;
             _con = con;
         }
+
         [HttpGet]
         public IActionResult getusers()
         {
@@ -26,11 +29,11 @@ namespace DemoApis.Controllers
                 e => new
                 {
                     e.Id,
-                    passoword = _dataProtector.Protect(e.password),
-                    confirmpassword=_dataProtector.Protect(e.confirmpassword)
+                    e.Name,
+                    password=decryptpassword(e.password),
+                    e.confirmpassword
                 }); 
             return Ok(output);
-            //return Ok(_con.registers.ToList());
         }
         [HttpPost]
         public IActionResult adduser([FromBody] Register register)
@@ -42,11 +45,34 @@ namespace DemoApis.Controllers
             }
             if (register.password == register.confirmpassword)
             {
+                register.password = encryptpassword(register.password);
                 _con.registers.Add(register);
                 _con.SaveChanges();
                 return Ok(new { message = "registered succesfully!!" });
             }
             return BadRequest(new { message = "password should match each other." });
+        }
+
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate([FromBody] UserVm userVM)
+        {
+            var user = _iuser.Authenticate(userVM.username , userVM.password);
+            if (user == null)
+                return BadRequest("Wrong Username / Password");
+            return Ok(user);
+        }
+        //methods for encrypt and decrypt
+        public static string encryptpassword(string password)
+        {
+            byte[] storename = ASCIIEncoding.ASCII.GetBytes(password);
+            string encryptname = Convert.ToBase64String(storename);
+            return encryptname;
+        }
+        public static string decryptpassword(string password)
+        {
+            byte[] entname = Convert.FromBase64String(password);
+            string decryptname = ASCIIEncoding.ASCII.GetString(entname);
+            return decryptname;
         }
     }
 }

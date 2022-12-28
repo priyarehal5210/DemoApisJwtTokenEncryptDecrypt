@@ -1,4 +1,5 @@
-﻿using DemoApis.Models;
+﻿using DemoApis.Migrations;
+using DemoApis.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -19,7 +20,10 @@ namespace DemoApis.IRepository
         }
         public Register Authenticate(string Username, string password)
         {
-            var userInDb = _con.registers.FirstOrDefault(u => u.Name == Username && u.password == password);
+                
+            var userInDb = _con.registers.FirstOrDefault(u => u.Name == Username);
+            userInDb.password = decryptpassword(userInDb.password);
+
             if (userInDb == null)
                 return null;
             //JWT Autentication
@@ -33,13 +37,19 @@ namespace DemoApis.IRepository
                 }),
                 Expires = DateTime.UtcNow.AddDays(7),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key)
-, SecurityAlgorithms.HmacSha256Signature)
+               , SecurityAlgorithms.HmacSha256Signature)
 
             };
             var token = TokenHandeler.CreateToken(tokenDescriptor);
             userInDb.token = TokenHandeler.WriteToken(token);
-            userInDb.password = "";
+            //userInDb.password = "";
             return userInDb;
+        }
+        public static string decryptpassword(string password)
+        {
+            byte[] entname = Convert.FromBase64String(password);
+            string decryptname = ASCIIEncoding.ASCII.GetString(entname);
+            return decryptname;
         }
     }
 }
