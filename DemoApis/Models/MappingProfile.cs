@@ -1,10 +1,9 @@
 ﻿using AutoMapper;
 using DemoApis.Dto;
-using DemoApis.Models;
 
-namespace DemoApis
+namespace DemoApis.Models
 {
-    public class MappingProfile:Profile
+    public class MappingProfile : Profile
     {
         public MappingProfile()
         {

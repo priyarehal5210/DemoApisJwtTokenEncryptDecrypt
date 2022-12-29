@@ -13,32 +13,12 @@ namespace DemoApis.Controllers
         "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
     };
 
-        private readonly IDataProtector _protector;
         private readonly ILogger<WeatherForecastController> _logger;
         private readonly Apd con;
-        public WeatherForecastController(ILogger<WeatherForecastController> logger, Apd con,IDataProtectionProvider Provider)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, Apd con)
         {
-            _protector = Provider.CreateProtector("this is a protector.");
             _logger = logger;
             this.con = con;
         }
-
-     
-
-        [HttpGet("test")]
-        public IActionResult test()
-        {
-            //var t1 = _protector.Protect("priya");
-            //return Ok(t1);
-            var depts = con.departments.ToList();
-            //return Ok(depts);
-            var output = depts.Select(
-                d => new
-                {
-                    id = _protector.Protect(d.Id.ToString()),
-                    name = _protector.Protect(d.name)
-                });
-            return Ok(output);
-        }
-    }
+   }
 }

@@ -20,30 +20,32 @@ namespace DemoApis.IRepository
         }
         public Register Authenticate(string Username, string password)
         {
-                
-            var userInDb = _con.registers.FirstOrDefault(u => u.Name == Username);
-            userInDb.password = decryptpassword(userInDb.password);
-
-            if (userInDb == null)
-                return null;
-            //JWT Autentication
-            var TokenHandeler = new JwtSecurityTokenHandler();
-            var key = Encoding.ASCII.GetBytes(_appsettings.secret);
-            var tokenDescriptor = new SecurityTokenDescriptor()
+            var userexist = _con.registers.FirstOrDefault(u => u.Name == Username);
+            if (userexist != null) {
+                var userindb =decryptpassword(userexist.password);
+                userexist.password = userindb;
+            }
+            if(userexist.Name==Username && userexist.password == password)
             {
-                Subject = new ClaimsIdentity(new Claim[]
+                //JWT Autentication
+                var TokenHandeler = new JwtSecurityTokenHandler();
+                var key = Encoding.ASCII.GetBytes(_appsettings.secret);
+                var tokenDescriptor = new SecurityTokenDescriptor()
                 {
-                    new Claim(ClaimTypes.Name,userInDb.Id.ToString()),
-                }),
-                Expires = DateTime.UtcNow.AddDays(7),
-                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key)
-               , SecurityAlgorithms.HmacSha256Signature)
+                    Subject = new ClaimsIdentity(new Claim[]
+                    {
+                    new Claim(ClaimTypes.Name,userexist.Id.ToString()),
+                    }),
+                    Expires = DateTime.UtcNow.AddDays(7),
+                    SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key)
+                   , SecurityAlgorithms.HmacSha256Signature)
 
-            };
-            var token = TokenHandeler.CreateToken(tokenDescriptor);
-            userInDb.token = TokenHandeler.WriteToken(token);
-            //userInDb.password = "";
-            return userInDb;
+                };
+                var token = TokenHandeler.CreateToken(tokenDescriptor);
+                userexist.token = TokenHandeler.WriteToken(token);
+                return userexist;
+            }
+            return null;
         }
         public static string decryptpassword(string password)
         {

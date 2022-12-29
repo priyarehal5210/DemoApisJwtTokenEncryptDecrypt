@@ -12,15 +12,13 @@ namespace DemoApis.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    //[Authorize]
+    [Authorize]
     public class EmployeeController : Controller
     {
         private readonly Apd con;
         private readonly IMapper _mapper;
-        //private readonly IDataProtector _dataProtector;
         public EmployeeController(Apd conn, IMapper mapper,IDataProtectionProvider dataProtectionProvider,DataProtection dataProtection)
         {
-            //_dataProtector = dataProtectionProvider.CreateProtector(dataProtection.key);
              con = conn;
             _mapper = mapper;
         }
@@ -28,16 +26,14 @@ namespace DemoApis.Controllers
         [HttpGet]
         public IActionResult getemp()
         {
-            //var employeelist = con.employees.ToList();
-            //return Ok();
-            var employeelist = con.employees.Include(dp=>dp.department).ToList();
+            var employeelist = con.employees.Include(d=>d.department).ToList();
             var output = employeelist.Select(d => new
             {
                 id = d.Id,
                 name = decryptname(d.Name),
-                d.DepartmentId,
+                dep=d.department,
                 d.IsOkay
-            }) ;
+            });
             return Ok(output);
         }
         [HttpGet("Departments")]

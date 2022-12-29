@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
 
-namespace DemoApis
+namespace DemoApis.Models
 {
     public class UserVm
     {

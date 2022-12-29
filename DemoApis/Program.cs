@@ -32,7 +32,6 @@ builder.Services.AddCors(options =>
 
 
 });
-//builder.Services.AddDataProtection();
 builder.Services.AddSingleton<DataProtection>();
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));

@@ -35,6 +35,7 @@ namespace DemoApis.Controllers
                 }); 
             return Ok(output);
         }
+        //register method
         [HttpPost]
         public IActionResult adduser([FromBody] Register register)
         {
@@ -53,6 +54,7 @@ namespace DemoApis.Controllers
             return BadRequest(new { message = "password should match each other." });
         }
 
+        //login method
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] UserVm userVM)
         {

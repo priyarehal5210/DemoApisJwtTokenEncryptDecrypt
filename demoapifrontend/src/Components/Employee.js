@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 function Employee() {
   const [dep, setdep] = useState([]);
   const [Employee, setemployee] = useState([]);
-  const [empform, setempform] = useState({});
+  const [empform, setempform] = useState([]);
 
   //calling employee display api
   const getall = () => {
@@ -66,6 +66,7 @@ function Employee() {
   };
   //edit button
   const editClick = (e) => {
+    console.log(e);
     setempform(e);
     console.log(empform);
   };
@@ -93,7 +94,7 @@ function Employee() {
         // console.log(item)
         <tr>
           <td>{item.name}</td>
-          <td>{item.department}</td>
+          <td>{item.dep.name}</td>
           <td>
             <input type="checkbox"
              disabled checked={item.isOkay}/>
@@ -105,7 +106,6 @@ function Employee() {
               data-target="#editModal"
               onClick={() => editClick(item)}
             >
-              {" "}
               Edit
             </button>
             <button

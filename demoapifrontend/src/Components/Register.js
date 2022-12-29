@@ -1,52 +1,44 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 function Register() {
-    const[user,setuser]=useState([]);
-    const[userform,setuserform]=useState({});
-    const getall=()=>{
-        axios.get("https://localhost:7058/api/register").then((d)=>{setuser(d.data)}).catch((e)=>{
-            console.log(e);
-        })
-    }
-    const saveclick=()=>{
-        axios
-        .post("https://localhost:7058/api/register",userform)
-        .then((d)=>{
-            console.log(d);
-            getall();
-        }).catch((e)=>{
-            console.log(e);
-        })
-    }
-    const changeHandler = (e) => {
-        console.log(e.target.name);
-        console.log(e.target.value);
-        setuserform({ ...userform, [e.target.name]: e.target.value });
-        console.log(userform);
-    
-      };
-    useEffect(()=>{
-        getall();
+  const[regform,setregform]=useState([]);
+  const changehandler=(e)=>{
+    console.log(e.data);
+    setregform({...regform,[e.target.name]:e.target.value})
+    console.log(regform)
+  }
+  const saveclick=()=>{
+    axios.
+    post("https://localhost:7058/api/register",regform)
+    .then((d)=>{
+      console.log(d.data);
+      alert("registered succeffully.")
+    }).catch((e)=>{
+      console.log(e);
     })
+  }
   return (
     <div>
+      <form className='form'>
         <div>
-            <form>
-                <input placeholder='enter name' type="text" onChange={changeHandler} name="name"/>
-                <input placeholder='enter password' type="password" onChange={changeHandler} name="password"/>
-                <input placeholder='enter confirm password' type="password" onChange={changeHandler}name="confirmpassword"/>
-                <input placeholder='enter confirm password' type="text" onChange={changeHandler}name="role"/>
-                <input placeholder='enter confirm password' type="text" onChange={changeHandler}name="token"/>
-                <button
+          <h1>register here</h1>
+        </div>
+        <div>
+        <div><input  name="name" placeholder='enter your password 'onChange={changehandler}/></div>
+          <div><input type="password" name="password" placeholder='enter your password 'onChange={changehandler}/></div>
+          <div><input type="password" name="confirmpassword" placeholder='enter your password 'onChange={changehandler}/></div>
+          <div><input  name="token" onChange={changehandler} /></div>
+          <div>  <button
                   type="button"
                   class="btn btn-primary"
                   data-dismiss="modal"
                   onClick={saveclick}
                 >
-                  save
-                </button>            </form>
+                  register
+                </button></div>
         </div>
+      </form>
     </div>
   )
 }

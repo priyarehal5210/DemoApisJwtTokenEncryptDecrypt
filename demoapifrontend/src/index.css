@@ -64,3 +64,43 @@ code {
   color:brown;
   background-color: rgb(241, 241, 241);
 }
+.form{
+  margin: auto;
+  margin-top: 100px;
+  display: flex;
+  width: auto;
+  background-color:cornsilk;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.4rem;
+}
+.form h1{
+  font-family: 'Times New Roman', Times, serif;
+  text-transform: capitalize;
+  margin: 20px;
+  font-weight: 900;
+  width: 500px;
+  color:white;
+  background-color: cadetblue;
+}
+.form input{
+  background: transparent;
+  border: 0;
+  margin: 5px;
+  border-radius: 4px;
+  text-align: center;
+  font-size: 1.2rem;
+  box-shadow: 1px 1px 2px lightblue;
+}
+.form button{
+  border: 0;
+  margin: 30px;
+  padding: 5px;
+  width: 100px;
+  color: white;
+  font-family: 'Times New Roman', Times, serif;
+  text-transform: capitalize;
+  background-color: rgb(24, 63, 65);
+  box-shadow: 1px 1px 2px gray;
+}
