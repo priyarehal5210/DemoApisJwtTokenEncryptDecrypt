@@ -53,7 +53,7 @@ namespace DemoApis.Controllers
             }
             return BadRequest(new { message = "password should match each other." });
         }
-
+      
         //login method
         [HttpPost("authenticate")]
         public IActionResult Authenticate([FromBody] UserVm userVM)

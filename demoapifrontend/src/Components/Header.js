@@ -10,6 +10,7 @@ function Header() {
               Employee
             </Link>
             <Link to="/register"  className="nav-link text-white text-captalize">register</Link>
+            <Link to="/login"  className="nav-link text-white text-captalize">login</Link>
           </ul>
         </div>
       </nav>

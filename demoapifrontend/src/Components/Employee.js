@@ -11,7 +11,7 @@ function Employee() {
     axios
       .get("https://localhost:7058/api/Employee")
       .then((e) => {
-        //    console.log(e.data);
+        //console.log(e.data);
         setemployee(e.data);
       })
       .catch((e) => {
