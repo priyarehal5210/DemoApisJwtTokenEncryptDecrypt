@@ -1,12 +1,14 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { json, useNavigate } from "react-router-dom";
-
+import { json, Link, useNavigate } from "react-router-dom";
+import Header from "./Header";
+import Swal from "sweetalert2";
 function Register() {
   const initData = {
     name: "",
     password: "",
     confirmpassword: "",
+    token:""
   };
   const [registerForm, setregisterForm] = useState(initData);
   const [registeredUsers, setregisteredUsers] = useState([]);
@@ -16,7 +18,7 @@ function Register() {
     setregisterForm({ ...registerForm, [e.target.name]: e.target.value });
   };
   const RegisteredUsers = () => {
-    debugger;
+    // debugger;
     axios.get("https://localhost:7058/api/register").then((res) => {
       setregisteredUsers(res.data);
       console.log(res.data);
@@ -30,10 +32,7 @@ function Register() {
     let hasError = false;
     let messages = initData;
     registeredUsers.forEach((element) => {
-//    console.log("old names", element.name);
-//    console.log("current name", registerForm.name);
       if (element.name == registerForm.name) {
-      //  console.log("user in use");
         hasError = true;
         messages = { ...messages, name: "User in use" };
       }
@@ -61,7 +60,14 @@ function Register() {
       axios
         .post("https://localhost:7058/api/register", registerForm)
         .then((d) => {
-          alert("registered succeffully.");
+          Swal.fire({  
+            position: 'top-end',  
+            icon: 'success',  
+            title: 'Your work has been saved',  
+            showConfirmButton: false,  
+            timer: 1500  
+          });  
+          //alert("registered succeffully.");
           navigate("/login");
         })
         .catch((e) => {
@@ -71,6 +77,7 @@ function Register() {
   };
   return (
     <div>
+      <Header/>
       <form className="form">
         <div>
           <h1>register here</h1>
@@ -93,13 +100,16 @@ function Register() {
             />
             <p className="text-danger">{registerFormError.confirmpassword}</p>
           </div>
-          <div>
+          {/* <div>
             <input name="token" onChange={changehandler} />
-          </div>
+          </div> */}
           <div>
-            <button type="button" class="btn btn-primary" onClick={saveclick}>
+            <button type="button" class="btn " onClick={saveclick}>
               register
             </button>
+            <Link className="btn btn-dark text-captalize" id="logginbtn" to="/login">
+              login
+            </Link>
           </div>
         </div>
       </form>

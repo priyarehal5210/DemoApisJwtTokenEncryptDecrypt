@@ -1,7 +1,8 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { json, Navigate, useNavigate } from "react-router-dom";
-
+import { json, Link, Navigate, useNavigate } from "react-router-dom";
+import Header from "./Header";
+import Swal from "sweetalert2";
 function Login() {
   const initData = {
     username: "",
@@ -31,23 +32,27 @@ useEffect(()=>{
     let messages =initData;
 
     registeredUsers.forEach((element) => {
-      // console.log("old",element.name);
-      //console.log("new",loginForm.username);
             if (element.name==loginForm.username) {
               hasError = false;
               setloginFormError(initData);
               axios
               .post("https://localhost:7058/api/register/authenticate", loginForm)
               .then((e) => {
-                alert("logined");
+                localStorage.setItem("Token",e.data.token);
+                Swal.fire({  
+                  title: 'Logined Successfully!!',  
+                  text: 'User has been logined successfully.',  
+                  icon: 'success',  
+                  showConfirmButton: false, 
+                  confirmButtonColor: '#3085d6',  
+                  timer:900
+                });  
                 navigate("/employee");
               })
               .catch((e) => {
                 console.log(e);
-              });
-          
+              });          
             }
-      
           })
           if(hasError) {
             console.log("error accured")
@@ -55,13 +60,14 @@ useEffect(()=>{
               setloginFormError(messages);
           }
         }
-
+        console.log(loginForm);
   const submit = (e) => {
     e.preventDefault();
   };
   return (
     <div>
-      <pre>{JSON.stringify(loginForm)}</pre>
+      <Header/>
+      {/* <pre>{JSON.stringify(loginForm)}</pre> */}
       <form className="form" onSubmit={submit}>
         <div>
           <h1>login here</h1>
@@ -96,6 +102,9 @@ useEffect(()=>{
             >
               login
             </button>
+          </div>
+          <div>
+            <small>haven't registerd?<Link to="/register">Clich here</Link></small>
           </div>
         </div>
       </form>

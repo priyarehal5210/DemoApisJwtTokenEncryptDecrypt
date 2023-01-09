@@ -1,15 +1,18 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
+import Header from "./Header";
 
 function Employee() {
   const [dep, setdep] = useState([]);
   const [Employee, setemployee] = useState([]);
   const [empform, setempform] = useState([]);
-
+  var token=localStorage.getItem("Token");
+  var Authorization=`Bearer ${token}`;
   //calling employee display api
   const getall = () => {
+   // let token=localStorage.getItem('token');
     axios
-      .get("https://localhost:7058/api/Employee")
+      .get("https://localhost:7058/api/Employee",{headers:{Authorization:Authorization}})
       .then((e) => {
         //console.log(e.data);
         setemployee(e.data);
@@ -21,7 +24,7 @@ function Employee() {
   //calling department display api
   const getalldep = () => {
     axios
-      .get("https://localhost:7058/api/Employee/Departments")
+      .get("https://localhost:7058/api/Employee/Departments",{headers:{Authorization:Authorization}})
       .then((e) => {
         setdep(e.data);
       })
@@ -31,10 +34,15 @@ function Employee() {
   };
   //calling save api
   const saveclick = () => {
+    // let token=localStorage.getItem('token');
     axios
-      .post("https://localhost:7058/api/Employee", empform)
+      .post("https://localhost:7058/api/Employee", empform,{headers:{Authorization:Authorization}})
       .then((d) => {
-        console.log(d);
+        //console.log(d.data.departmentId);
+        //console.log(d.data);
+        if(d.data.departmentId==null){
+          d.data.departmentId=1;
+        }
         getall();
       })
       .catch((e) => {
@@ -45,7 +53,7 @@ function Employee() {
   const deleteClick = (id) => {
     var res =window.confirm("want to delete?");
     if (res) {
-      axios.delete("https://localhost:7058/api/Employee/" + id).then(() => {
+      axios.delete("https://localhost:7058/api/Employee/" + id,{headers:{Authorization:Authorization}}).then(() => {
         getall();
       });
     } else {
@@ -68,12 +76,15 @@ function Employee() {
   const editClick = (e) => {
     console.log(e);
     setempform(e);
-    console.log(empform);
   };
+  useEffect(()=>{
+    console.clear()
+console.log(empform);
+  },[empform])
   //calling update api
   const updateclick = () => {
     axios
-      .put("https://localhost:7058/api/Employee", empform)
+      .put("https://localhost:7058/api/Employee", empform,{headers:{Authorization:Authorization}})
       .then(() => {
         getall();
       })
@@ -85,7 +96,7 @@ function Employee() {
   useEffect(() => {
     getall();
     getalldep();
-  });
+  },[]);
   //tbody
   function renderemp() {
     let rowdata = [];
@@ -120,8 +131,10 @@ function Employee() {
     });
     return rowdata;
   }
+ 
   return (
     <div>
+      <Header/>
       <div className="text-center row mt-4 div">
         <h1 className="text-capitalize  head">Employee list</h1>
         <button
@@ -287,11 +300,13 @@ function Employee() {
                     class="col text-center text-capitalize"
                     onChange={changeHandler}
                     name="departmentId"
+                    id="departmentId"
+                    value={ empform && empform.departmentId ? empform.departmentId :  empform.dep && empform.dep.id ? empform.dep.id :"" }
                   >
                     {dep
                       ? dep.map((item) => {
                           return (
-                            <option id={item.id} value={item.id}>
+                            <option  id={item.id} value={item.id}>
                               {item.name}
                             </option>
                           );
