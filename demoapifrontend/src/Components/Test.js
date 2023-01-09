@@ -1,5 +1,4 @@
 import axios from "axios";
-import $ from "jquery";
 import React, { useEffect, useState, setState } from "react";
 import Header from "./Header";
 function Test() {
@@ -41,33 +40,32 @@ function Test() {
     getall();
   }, []);
   function removeData(e) {
-    console.log(e);
-    $("#row1").remove();
+    var index=data.indexOf(e.id);
+    console.log(index);
+    data.splice(index); 
+    console.log(data);  
   }
   const checkbox = (e, id) => {
-    debugger;
     var val = e.checkme;
     if (val == false) {
       val = true;
       e.checkme = val;
       setshow(true);
     } else {
-      setshow(false);
       val = false;
       e.checkme = false;
+      setshow(false);
     }
-    console.log(val);
   };
   const saveclick = () => {
-    debugger;
     //alert("clicked");
     var datais = data;
     console.log(datais);
     var truedata = datais.filter((p) => p.checkme == true);
-
     console.log(truedata);
     let predata = truedata.filter((p) => p.checkme == true).map((filter) => {
         let obj = {
+          id:filter.id,
           name: filter.name,
           age: filter.age,
           checkme: filter.checkme,
@@ -77,43 +75,12 @@ function Test() {
           .post("https://localhost:7058/api/Test", obj)
           .then((d) => {
             getall();
+            removeData(obj);
           })
           .catch((e) => {
             console.log(e);
           });
-        removeData(truedata);
       });
-    //var comingdata = checkdata;
-    //var storeddata = data;
-    //console.log(comingdata);
-    //console.log(storeddata);
-    // if (comingdata.id == storeddata.id) {
-    //   console.log("okay");
-    //   var postobj = comingdata;
-    //   console.log(postobj);
-    //   let predata = postobj
-    //     .filter((p) => (p.checkme == true))
-    //     .map((filter) => {
-    //       console.log(filter.name, +filter.age);
-    //       let obj = {
-    //         name: filter.name,
-    //         age: filter.age,
-    //         checkme: filter.checkme,
-    //       };
-    //       axios
-    //         .post("https://localhost:7058/api/Test", obj)
-    //         .then((d) => {
-    //           console.log(obj);
-    //           console.log(d.data);
-    //           alert("saved");
-    //           getall();
-    //         })
-    //         .catch((e) => {
-    //           console.log(e);
-    //         });
-    //         removeData(postobj);
-    //     });
-    // }
   };
   function renderdata() {
     let rowdata = [];
