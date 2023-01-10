@@ -30,6 +30,7 @@ function Header() {
           {user?(<a onClick={logout} className="nav-link text-white text-captalize">logout</a>):
             (<Link to="/login" className="nav-link text-white text-captalize">login</Link>)} 
             <Link to="/test"className="nav-link text-danger text-captalize">test</Link>
+            <Link to="/singledataset"className="nav-link text-danger text-captalize">singledataset</Link>
         </div>
       </nav>
     </div>

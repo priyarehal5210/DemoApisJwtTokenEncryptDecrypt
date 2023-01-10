@@ -13,5 +13,6 @@ namespace DemoApis.Models
         public DbSet<Employee> employees { get; set; }
         public DbSet<Register> registers { get; set; }
         public DbSet<Test>tests { get; set; }
+        public DbSet<SingleDatasetTabel>singleDatasetTabels { get; set; }
     }
 }
