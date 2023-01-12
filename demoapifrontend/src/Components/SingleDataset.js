@@ -1,5 +1,6 @@
 import axios from "axios";
 import { cleanData, removeData } from "jquery";
+import { nanoid } from "nanoid";
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
 
@@ -8,92 +9,124 @@ function SingleDataset() {
   const [name, setname] = useState("");
   const [age, setage] = useState("");
   const [show, setshow] = useState(false);
-  const [checkme, setcheckme] = useState();
-  const[edit,setedit]=useState([]);
-  const getall = () => {
+  const[editForm,setEditForm]=useState([]);
+  useEffect(() => {
+    getDataFromDb();
+  }, []);
+  
+  //DATABASE OPERATIONS
+  const getDataFromDb = () => {
     axios
       .get("https://localhost:7058/api/SingleDataset")
       .then((d) => {
+
+        ///OBSTACLE----
+        // const datais = [...data];
+        // const falsedata=datais.filter((p)=>p.checkme===null);
+        // console.log(falsedata);
+        // setdata(falsedata);
+        // console.log(data);
+        // setdata(data);
+
         setdata(d.data);
       })
       .catch((e) => {
         console.log(e);
       });
   };
-  const saveclick = () => {
+  const editStoredData=(e)=>{
+    setEditForm(e);
+  }
+  const deleteDataFromDb=(id)=>{
+    var res =window.confirm("want to delete?");
+    if (res) {
+      axios.delete("https://localhost:7058/api/SingleDataset/" + id).then(() => {      
+      getDataFromDb();
+      });
+    } else {
+      getDataFromDb();
+    }
+  }
+  const saveToDb = () => {
+    const datais =data;
+    let predata = datais.filter((p) => p.checkme == true).map((item) => {
+        let obj = {
+          name: item.name,
+          age: item.age,
+          checkme: item.checkme,
+        };
+        
+        axios
+        .post("https://localhost:7058/api/SingleDataset", obj)
+        .then(() => {   
+          getDataFromDb();
+        })
+        .catch((e) => {
+          console.log(e);
+        });    
+      });    
+  };
+  const updateInDb=()=>{
+    axios.put("https://localhost:7058/api/SingleDataset",editForm)
+    .then(()=>{
+      getDataFromDb();
+    }).catch((e)=>{
+      console.log(e);
+    })
+  }
+  //STATES OPERATIONS
+  const saveToTable = () => {
     var dataObj = {
+      id:nanoid(),
       name,
       age,
-      checkme,
+      checkme:null
     };
-    console.log("user info is", dataObj);
+   // console.log("user info is", dataObj);
     setdata([...data, dataObj]);
+    setname("");
+    setage("");
   };
+  const editDataInState=(e)=>{
+    setEditForm(e);
+  }
+  const updateState=()=>{
+    var editableData = {
+      id:editForm.id,
+      name:editForm.name,
+      age:editForm.age,
+    };
+    console.log(editableData);
+    const dataBeforeEdit=[...data];
+    console.log(dataBeforeEdit);
+    const index=data.findIndex((item)=>item.id===editForm.id);
+    console.log(index);
+    dataBeforeEdit[index]=editableData;
+    setdata(dataBeforeEdit);
+    console.log(dataBeforeEdit);
+  }
+  const removeDataFromState=(id)=>{
+    const dataBeforeDelete=[...data];
+    console.log(dataBeforeDelete);
+    const index=data.findIndex((item)=>item.id===id);
+    dataBeforeDelete.splice(index,1);
+    console.log(dataBeforeDelete);
+    setdata(dataBeforeDelete);
+    console.log(dataBeforeDelete);
+  }
+  //CHANGEHANDLERS
+  const changeHandler=(e)=>{
+    setEditForm({...editForm,[e.target.name]:e.target.value})
+  }
   const checkbox = (e) => {
-    debugger;
     var val = e.checkme;
     if (val == false) {
-      val = false;
-      e.checkme = false;
       setshow(false);
     } else {
-      val = true;
-      e.checkme = val;
+      e.checkme = true;
       setshow(true);
     }
   };
-  const savetoform = () => {
-    debugger;
-    var datais = data;
-    var truedata = datais.filter((p) => p.checkme == true);
-    let predata = truedata
-      .filter((p) => p.checkme == true)
-      .map((filter) => {
-        let obj = {
-          name: filter.name,
-          age: filter.age,
-          checkme: filter.checkme,
-        };
-        axios
-          .post("https://localhost:7058/api/SingleDataset", obj)
-          .then((d) => {
-           getall();
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-          console.log(datais);
-      });
-  };
-  const changehandler=(e)=>{
-    console.log(e);
-    setedit({...edit,[e.target.name]:e.target.value})
-  }
-  const editClick=(e)=>{    
-    console.log(e);
-    setedit(e);
-  }
-  const updateclick=()=>{
-    axios.put("https://localhost:7058/api/SingleDataset",edit)
-    .then(()=>{
-        getall();
-    }).catch((e)=>{
-        console.log(e);
-    })
-  }
-  const deleteClick=(id)=>{
-    var res =window.confirm("want to delete?");
-    if (res) {
-      axios.delete("https://localhost:7058/api/SingleDataset/" + id).then(() => {
-        getall();
-      });
-    } else {
-      getall();
-    }
-  }
-  useEffect(() => {
-    getall();
-  }, []);
   function submit(e) {
     e.preventDefault();
   }
@@ -114,23 +147,38 @@ function SingleDataset() {
             </td>
           )}
           {item.checkme == false ? (
-            <td>
-              <button
-                className="btn btn-info"
-                data-toggle="modal"
-                data-target="#editModal"
-                onClick={() => editClick(item)}
-              >
-                Edit
-              </button>
+            <td>           
               <button
                 className="btn btn-danger"
-                onClick={() => deleteClick(item.id)}
+                onClick={() => deleteDataFromDb(item.id)}
               >
                 Delete
               </button>
+              <button
+                data-toggle="modal"
+                data-target="#editModal"
+                className="btn btn-danger"
+                onClick={() => editStoredData(item)}
+              >
+                edit
+              </button>
             </td>
-          ) : null}
+          ) : <td>
+          <button
+            className="btn btn-danger"
+            onClick={() => removeDataFromState(item.id)}
+          >
+            remove
+          </button>
+          <button
+           data-toggle="modal"
+           data-target="#editModal"
+           className="btn btn-danger"
+           onClick={() => editDataInState(item)}
+          >
+            edit state
+          </button>
+        </td>}
         </tr>
       );
     });
@@ -149,7 +197,6 @@ function SingleDataset() {
           add data
         </button>
       </div>
-
       {/* main table */}
       <div>
         <h3 id="tblhead">main table</h3>
@@ -169,13 +216,12 @@ function SingleDataset() {
             type="button"
             class="btn btn-primary"
             id="savebtn"
-            onClick={savetoform}
+            onClick={saveToDb}
           >
             save
           </button>
         ) : null}
       </div>
-
       <form autoComplete="off" onSubmit={submit}>
         <div class="modal" id="savemodal" role="dialog">
           <div class="modal-dialog" role="document">
@@ -194,18 +240,6 @@ function SingleDataset() {
               </div>
               {/* <!-- body start --> */}
               <div class="modal-body border-0 p-2">
-                {/* <div class="form-group row">
-                  <label class="col  textn-capitalize" for="name">
-                    id
-                  </label>
-                  <input
-                    type="text"
-                    name="id"
-                    class="col text-capitalize"
-                    id="id"
-                  />
-                </div> */}
-               
                 <div class="form-group row">
                   <label class="col  textn-capitalize" for="name">
                     name
@@ -234,14 +268,22 @@ function SingleDataset() {
                     }}
                   />
                 </div>
-            
+                <div class="form-group row">
+                  <label class="col  textn-capitalize" for="checkbox">
+                    checkme
+                  </label>
+                  <input
+                  disabled
+                    type="checkbox"
+                  />
+                </div>
               </div>
               <div class="modal-footer">
                 <button
                   type="submit"
                   class="btn btn-primary"
                   data-dismiss="modal"
-                  onClick={saveclick}
+                  onClick={saveToTable}
                 >
                   save
                 </button>
@@ -257,13 +299,15 @@ function SingleDataset() {
           </div>
         </div>
       </form>
-      <form autoComplete="off" onSubmit={submit}>
+      <form>
         <div class="modal" id="editModal" role="dialog">
           <div class="modal-dialog" role="document">
             <div class="modal-content p-2">
               {/* <!-- headestartr  --> */}
               <div class="modal-header">
-                <h3 class="modal-title text-capitalize">edit data</h3>
+                <h3 class="modal-title text-capitalize text-primary">
+                  edit Employee
+                </h3>
                 <button
                   type="button"
                   class="close"
@@ -276,41 +320,51 @@ function SingleDataset() {
               {/* <!-- body start --> */}
               <div class="modal-body border-0 p-2">
                 <div class="form-group row">
-                  <label class="col  textn-capitalize" for="name">
+                  <label class="col text-center textn-capitalize" for="name">
                     name
                   </label>
                   <input
                     type="text"
                     name="name"
-                    class="col text-capitalize "
+                    class="col text-capitalize border-0"
                     id="name"
-                    onChange={changehandler}
-                    value={edit.name}
+                    onChange={changeHandler}
+                    value={editForm.name}
                   />
                 </div>
+                
                 <div class="form-group row">
-                  <label class="col  textn-capitalize" for="age">
+                  <label class="col text-center textn-capitalize" for="age">
                     age
                   </label>
                   <input
                     type="tel"
                     name="age"
-                    class="col text-capitalize "
+                    class="col text-capitalize border-0"
                     id="age"
-                    onChange={changehandler}
-                    value={edit.age}
+                    onChange={changeHandler}
+                    value={editForm.age}
                   />
                 </div>
+            
               </div>
               <div class="modal-footer">
-                <button
-                  type="submit"
+              <button
+                  type="button"
                   class="btn btn-primary"
                   data-dismiss="modal"
-                  onClick={updateclick}
+                  onClick={updateInDb} 
                 >
-                  udpate
-                </button>
+                  update
+                </button>              
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-dismiss="modal"
+                  onClick={updateState} 
+                >
+                  updatestate
+                </button>   
                 <button
                   type="button"
                   class="btn btn-secondary"
