@@ -55,7 +55,6 @@ function SingleDataset() {
     }
   }
   const saveToDb = () => {    
-    debugger;
     // const datais =data;
     const datais=data;
     setdata(datais);
@@ -68,13 +67,12 @@ function SingleDataset() {
         axios
         .post("https://localhost:7058/api/SingleDataset", obj)
         .then(() => {   
-          debugger;
           const allData=[...data];
           console.log(allData);
           const falsedatais=allData.filter((p)=>p.checkme==null);
           console.log(falsedatais);
           setfalsedata(falsedatais);
-          getDataFromDb();
+          // getDataFromDb();
         })
         .catch((e) => {
           console.log(e);
@@ -133,7 +131,6 @@ function SingleDataset() {
     setEditForm({...editForm,[e.target.name]:e.target.value})
   }
   const checkbox = (e) => {
-    debugger;
     var val = e.checkme;
     if (val == false) {
       setshow(false);
