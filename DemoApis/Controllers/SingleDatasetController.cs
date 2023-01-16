@@ -23,7 +23,7 @@ namespace DemoApis.Controllers
         {
             if(ModelState.IsValid && singleDatasetTabel.id == 0)
             {
-                singleDatasetTabel.checkme =false;
+                singleDatasetTabel.checkme = false;
                 _con.singleDatasetTabels.Add(singleDatasetTabel);
                 _con.SaveChanges();
                 return Ok();

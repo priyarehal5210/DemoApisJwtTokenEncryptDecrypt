@@ -1,39 +1,46 @@
 import axios from "axios";
-import { cleanData, removeData } from "jquery";
 import { nanoid } from "nanoid";
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
 
 function SingleDataset() {
+  function getDataFromLocalStorage(){
+    const datais=localStorage.getItem('falseData');
+    if(datais){
+      return JSON.parse(datais);
+    }
+    else{
+    return [];
+    }
+  }
+  // console.log(getDataFromLocalStorage())
   const [data, setdata] = useState([]);
   const [name, setname] = useState("");
-  const [age, setage] = useState("");
+  const [age, setage] = useState();
   const [show, setshow] = useState(false);
-  const[editForm,setEditForm]=useState([]);
+  const[falsedata,setfalsedata]=useState([]);
+  const [editForm,setEditForm]=useState([]);
   useEffect(() => {
     getDataFromDb();
   }, []);
-  
   //DATABASE OPERATIONS
   const getDataFromDb = () => {
     axios
       .get("https://localhost:7058/api/SingleDataset")
-      .then((d) => {
-
-        ///OBSTACLE----
-        // const datais = [...data];
-        // const falsedata=datais.filter((p)=>p.checkme===null);
-        // console.log(falsedata);
-        // setdata(falsedata);
-        // console.log(data);
-        // setdata(data);
-
-        setdata(d.data);
+      .then((d) => { 
+        const comingdata=[d.data];
+        const datafromlocalstorage=getDataFromLocalStorage();
+        console.log(datafromlocalstorage);
+        setdata(...comingdata);
+        console.log(data);
       })
       .catch((e) => {
         console.log(e);
       });
   };
+  useEffect(()=>{
+    localStorage.setItem('falseData',JSON.stringify(falsedata));
+  },[falsedata])
   const editStoredData=(e)=>{
     setEditForm(e);
   }
@@ -47,18 +54,26 @@ function SingleDataset() {
       getDataFromDb();
     }
   }
-  const saveToDb = () => {
-    const datais =data;
+  const saveToDb = () => {    
+    debugger;
+    // const datais =data;
+    const datais=data;
+    setdata(datais);
     let predata = datais.filter((p) => p.checkme == true).map((item) => {
         let obj = {
           name: item.name,
           age: item.age,
           checkme: item.checkme,
         };
-        
         axios
         .post("https://localhost:7058/api/SingleDataset", obj)
         .then(() => {   
+          debugger;
+          const allData=[...data];
+          console.log(allData);
+          const falsedatais=allData.filter((p)=>p.checkme==null);
+          console.log(falsedatais);
+          setfalsedata(falsedatais);
           getDataFromDb();
         })
         .catch((e) => {
@@ -82,10 +97,9 @@ function SingleDataset() {
       age,
       checkme:null
     };
-   // console.log("user info is", dataObj);
     setdata([...data, dataObj]);
     setname("");
-    setage("");
+    setage();
   };
   const editDataInState=(e)=>{
     setEditForm(e);
@@ -119,6 +133,7 @@ function SingleDataset() {
     setEditForm({...editForm,[e.target.name]:e.target.value})
   }
   const checkbox = (e) => {
+    debugger;
     var val = e.checkme;
     if (val == false) {
       setshow(false);
@@ -137,14 +152,14 @@ function SingleDataset() {
         <tr>
           <td>{item.name}</td>
           <td>{item.age}</td>
-          {item.checkme == false ? (
-            <td>
-              <input type="checkbox" disabled checked />
-            </td>
+          {item.checkme == true || item.checkme==null? (
+               <td>
+               <input type="checkbox" onClick={() => checkbox(item)} />
+               </td>
           ) : (
             <td>
-              <input type="checkbox" onClick={() => checkbox(item)} />
-            </td>
+            <input type="checkbox" disabled checked />
+          </td>
           )}
           {item.checkme == false ? (
             <td>           
@@ -209,7 +224,8 @@ function SingleDataset() {
               <th>Action</th>
             </tr>
           </thead>
-          <tbody>{renderdataofdb()}</tbody>
+          <tbody>{renderdataofdb()}
+          </tbody>
         </table>
         {show ? (
           <button
