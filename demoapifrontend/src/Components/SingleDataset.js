@@ -10,17 +10,16 @@ function SingleDataset() {
   const [name, setname] = useState("");
   const [age, setage] = useState();
   const [show, setshow] = useState(false);
-  const[falsedata,setfalsedata]=useState([]);
   const [editForm,setEditForm]=useState([]);
   useEffect(() => {
     getDataFromDb();
   }, []);
-  //DATABASE OPERATIONS
   const getDataFromDb = () => {
     axios
       .get("https://localhost:7058/api/SingleDataset")
       .then((d) => { 
-        setdata(d.data);        
+        setdata(d.data);     
+        console.log(d.data)   
       })
       .catch((e) => {
         console.log(e);
@@ -40,7 +39,13 @@ function SingleDataset() {
    var res =window.confirm("want to delete?");
     if (res) {
       axios.delete("https://localhost:7058/api/SingleDataset/" + item.id).then(() => {      
-      getDataFromDb();
+        const dataBeforeDelete=[...data];
+        console.log(dataBeforeDelete);
+        const index=data.findIndex((p)=>p.id===item.id);
+        dataBeforeDelete.splice(index,1);
+        console.log(dataBeforeDelete);
+        setdata(dataBeforeDelete);
+        console.log(dataBeforeDelete);
       });
     } else {
       getDataFromDb();
@@ -58,33 +63,27 @@ function SingleDataset() {
         };
         axios
         .post("https://localhost:7058/api/SingleDataset", obj)
-        .then(() => { 
-          addingTrueValue();
+        .then((d) => { 
+          console.log(d.data);
+          const comingdata=d.data
+          addingTrueValue(comingdata);
         })
         .catch((e) => {
           console.log(e);
         });    
       });    
   };
-  function addingTrueValue(){
+  function addingTrueValue(e){
+    console.log(e);
     setdata(data.map(item=>{
       if(item.checkme==true){
-        let obj={
-          name:item.name,
-          age:item.age,
-        }
-        console.log(obj);
-        return {...item,checkme:false};
+        item.checkme=false;
+        item.id=e.id;
+        return {...item};
       }else{
         return item;
       }
     }))
-    // const allData=[...data];
-    // const newvalue=allData.find(item=>item.checkme==true);
-    // console.log(newvalue);
-    // newvalue.checkme=false;
-    // console.log(newvalue);
-    // setdata(newvalue);
   }
   const updateInDb=()=>{
     if(editForm.checkme==null){
@@ -106,7 +105,20 @@ function SingleDataset() {
  else{
  axios.put("https://localhost:7058/api/SingleDataset",editForm)
     .then(()=>{
-      getDataFromDb();
+      let editableData = {
+        id:editForm.id,
+        name:editForm.name,
+        age:editForm.age,
+        checkme:false
+      };
+      console.log(editableData);
+      const dataBeforeEdit=[...data];
+      console.log(dataBeforeEdit);
+      const index=data.findIndex((item)=>item.id===editForm.id);
+      console.log(index);
+      dataBeforeEdit[index]=editableData;
+      setdata(dataBeforeEdit);
+      console.log(dataBeforeEdit);
     }).catch((e)=>{
       console.log(e);
     })

@@ -26,7 +26,7 @@ namespace DemoApis.Controllers
                 singleDatasetTabel.checkme = false;
                 _con.singleDatasetTabels.Add(singleDatasetTabel);
                 _con.SaveChanges();
-                return Ok();
+                return Ok(singleDatasetTabel);
             }
             return BadRequest();
         }

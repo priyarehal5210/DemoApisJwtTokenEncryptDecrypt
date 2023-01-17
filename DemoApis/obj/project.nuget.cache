@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "QPAunNCCvcLSy8DkVS5DlBvjYfwcC9m1K/7ji5LWS0X80RfYdBwzhw+m/AHkUHJ6+1vSRomWOp/XxAbzCtzpqA==",
+  "dgSpecHash": "knRGcDCp0U3rO69sTJkRyghw2+uidVn8Q85Ups0Brvcj3UaEJwG18xH9HJkc74rOQbg1ZaqaWg9r9uQ2edSS1Q==",
   "success": true,
-  "projectFilePath": "D:\\DemoApis\\DemoApis\\DemoApis.csproj",
+  "projectFilePath": "D:\\MyDemoApiGit\\DemoApisJwtTokenEncryptDecrypt\\DemoApis\\DemoApis.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\PC\\.nuget\\packages\\automapper\\12.0.0\\automapper.12.0.0.nupkg.sha512",
     "C:\\Users\\PC\\.nuget\\packages\\automapper.extensions.microsoft.dependencyinjection\\12.0.0\\automapper.extensions.microsoft.dependencyinjection.12.0.0.nupkg.sha512",
