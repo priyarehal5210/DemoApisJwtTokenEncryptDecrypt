@@ -4,15 +4,7 @@ import React, { useEffect, useState } from "react";
 import Header from "./Header";
 
 function SingleDataset() {
-  function getDataFromLocalStorage(){
-    const datais=localStorage.getItem('falseData');
-    if(datais){
-      return JSON.parse(datais);
-    }
-    else{
-    return [];
-    }
-  }
+ 
   // console.log(getDataFromLocalStorage())
   const [data, setdata] = useState([]);
   const [name, setname] = useState("");
@@ -28,64 +20,103 @@ function SingleDataset() {
     axios
       .get("https://localhost:7058/api/SingleDataset")
       .then((d) => { 
-        const comingdata=[d.data];
-        const datafromlocalstorage=getDataFromLocalStorage();
-        console.log(datafromlocalstorage);
-        setdata(...comingdata);
-        console.log(data);
+        setdata(d.data);        
       })
       .catch((e) => {
         console.log(e);
       });
   };
-  useEffect(()=>{
-    localStorage.setItem('falseData',JSON.stringify(falsedata));
-  },[falsedata])
-  const editStoredData=(e)=>{
-    setEditForm(e);
-  }
-  const deleteDataFromDb=(id)=>{
-    var res =window.confirm("want to delete?");
+  const deleteData=(item)=>{
+    if(item.checkme==null || item.checkme==true){
+    const dataBeforeDelete=[...data];
+    console.log(dataBeforeDelete);
+    const index=data.findIndex((p)=>p.id===item.id);
+    dataBeforeDelete.splice(index,1);
+    console.log(dataBeforeDelete);
+    setdata(dataBeforeDelete);
+    console.log(dataBeforeDelete);
+    }
+    else{
+   var res =window.confirm("want to delete?");
     if (res) {
-      axios.delete("https://localhost:7058/api/SingleDataset/" + id).then(() => {      
+      axios.delete("https://localhost:7058/api/SingleDataset/" + item.id).then(() => {      
       getDataFromDb();
       });
     } else {
       getDataFromDb();
     }
+    }
+ 
   }
   const saveToDb = () => {    
-    // const datais =data;
-    const datais=data;
-    setdata(datais);
+    const datais=[...data];
     let predata = datais.filter((p) => p.checkme == true).map((item) => {
         let obj = {
           name: item.name,
           age: item.age,
-          checkme: item.checkme,
+          checkme: item.checkme
         };
         axios
         .post("https://localhost:7058/api/SingleDataset", obj)
-        .then(() => {   
-          const allData=[...data];
-          console.log(allData);
-          const falsedatais=allData.filter((p)=>p.checkme==null);
-          console.log(falsedatais);
-          setfalsedata(falsedatais);
-          // getDataFromDb();
+        .then(() => { 
+          addingTrueValue();
         })
         .catch((e) => {
           console.log(e);
         });    
       });    
   };
+  function addingTrueValue(){
+    setdata(data.map(item=>{
+      if(item.checkme==true){
+        let obj={
+          name:item.name,
+          age:item.age,
+        }
+        console.log(obj);
+        return {...item,checkme:false};
+      }else{
+        return item;
+      }
+    }))
+    // const allData=[...data];
+    // const newvalue=allData.find(item=>item.checkme==true);
+    // console.log(newvalue);
+    // newvalue.checkme=false;
+    // console.log(newvalue);
+    // setdata(newvalue);
+  }
   const updateInDb=()=>{
-    axios.put("https://localhost:7058/api/SingleDataset",editForm)
+    if(editForm.checkme==null){
+      console.log("state vala");
+      let editableData = {
+        id:editForm.id,
+        name:editForm.name,
+        age:editForm.age,
+      };
+      console.log(editableData);
+      const dataBeforeEdit=[...data];
+      console.log(dataBeforeEdit);
+      const index=data.findIndex((item)=>item.id===editForm.id);
+      console.log(index);
+      dataBeforeEdit[index]=editableData;
+      setdata(dataBeforeEdit);
+      console.log(dataBeforeEdit);
+    }
+ else{
+ axios.put("https://localhost:7058/api/SingleDataset",editForm)
     .then(()=>{
       getDataFromDb();
     }).catch((e)=>{
       console.log(e);
     })
+    console.log("database vala")
+ }    
+   
+  }
+  const clear=()=>{
+    setname("");
+    setage("");
   }
   //STATES OPERATIONS
   const saveToTable = () => {
@@ -96,37 +127,11 @@ function SingleDataset() {
       checkme:null
     };
     setdata([...data, dataObj]);
-    setname("");
-    setage();
+    clear();
   };
-  const editDataInState=(e)=>{
+  const editData=(e)=>{
     setEditForm(e);
   }
-  const updateState=()=>{
-    var editableData = {
-      id:editForm.id,
-      name:editForm.name,
-      age:editForm.age,
-    };
-    console.log(editableData);
-    const dataBeforeEdit=[...data];
-    console.log(dataBeforeEdit);
-    const index=data.findIndex((item)=>item.id===editForm.id);
-    console.log(index);
-    dataBeforeEdit[index]=editableData;
-    setdata(dataBeforeEdit);
-    console.log(dataBeforeEdit);
-  }
-  const removeDataFromState=(id)=>{
-    const dataBeforeDelete=[...data];
-    console.log(dataBeforeDelete);
-    const index=data.findIndex((item)=>item.id===id);
-    dataBeforeDelete.splice(index,1);
-    console.log(dataBeforeDelete);
-    setdata(dataBeforeDelete);
-    console.log(dataBeforeDelete);
-  }
-  //CHANGEHANDLERS
   const changeHandler=(e)=>{
     setEditForm({...editForm,[e.target.name]:e.target.value})
   }
@@ -162,7 +167,7 @@ function SingleDataset() {
             <td>           
               <button
                 className="btn btn-danger"
-                onClick={() => deleteDataFromDb(item.id)}
+                onClick={() => deleteData(item)}
               >
                 Delete
               </button>
@@ -170,7 +175,7 @@ function SingleDataset() {
                 data-toggle="modal"
                 data-target="#editModal"
                 className="btn btn-danger"
-                onClick={() => editStoredData(item)}
+                onClick={() => editData(item)}
               >
                 edit
               </button>
@@ -178,7 +183,7 @@ function SingleDataset() {
           ) : <td>
           <button
             className="btn btn-danger"
-            onClick={() => removeDataFromState(item.id)}
+            onClick={() => deleteData(item)}
           >
             remove
           </button>
@@ -186,7 +191,7 @@ function SingleDataset() {
            data-toggle="modal"
            data-target="#editModal"
            className="btn btn-danger"
-           onClick={() => editDataInState(item)}
+           onClick={() => editData(item)}
           >
             edit state
           </button>
@@ -251,7 +256,7 @@ function SingleDataset() {
                   <span>&times;</span>
                 </button>
               </div>
-              {/* <!-- body start --> */}
+               {/* <!-- body start --> */}
               <div class="modal-body border-0 p-2">
                 <div class="form-group row">
                   <label class="col  textn-capitalize" for="name">
@@ -279,15 +284,6 @@ function SingleDataset() {
                     onChange={(e) => {
                       setage(e.target.value);
                     }}
-                  />
-                </div>
-                <div class="form-group row">
-                  <label class="col  textn-capitalize" for="checkbox">
-                    checkme
-                  </label>
-                  <input
-                  disabled
-                    type="checkbox"
                   />
                 </div>
               </div>
@@ -370,14 +366,14 @@ function SingleDataset() {
                 >
                   update
                 </button>              
-                <button
+                {/* <button
                   type="button"
                   class="btn btn-primary"
                   data-dismiss="modal"
                   onClick={updateState} 
                 >
                   updatestate
-                </button>   
+                </button>    */}
                 <button
                   type="button"
                   class="btn btn-secondary"
