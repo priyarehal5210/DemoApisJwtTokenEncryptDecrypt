@@ -1,7 +1,6 @@
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
-
 function Employee() {
   const [dep, setdep] = useState([]);
   const [Employee, setemployee] = useState([]);
@@ -78,8 +77,7 @@ function Employee() {
     setempform(e);
   };
   useEffect(()=>{
-    console.clear()
-console.log(empform);
+    //console.log(empform);
   },[empform])
   //calling update api
   const updateclick = () => {

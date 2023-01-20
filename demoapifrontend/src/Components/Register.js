@@ -100,9 +100,6 @@ function Register() {
             />
             <p className="text-danger">{registerFormError.confirmpassword}</p>
           </div>
-          {/* <div>
-            <input name="token" onChange={changehandler} />
-          </div> */}
           <div>
             <button type="button" class="btn " onClick={saveclick}>
               register

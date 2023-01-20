@@ -1,6 +1,7 @@
 using DemoApis;
 using DemoApis.IRepository;
 using DemoApis.Models;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
@@ -38,6 +39,14 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 //JWT implementation
 var appsettingssection = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<appsettings>(appsettingssection);
+
+//builder.Services.AddSession(options =>
+//{
+//    options.Cookie.Name = ".AdventureWorks.Session";
+//    options.IdleTimeout = TimeSpan.FromSeconds(10);
+//    options.Cookie.IsEssential = true;
+//});
+
 var appsetting = appsettingssection.Get<appsettings>();
 var key = Encoding.ASCII.GetBytes(appsetting.secret);
 builder.Services.AddAuthentication(x =>
@@ -68,7 +77,8 @@ app.UseCors("MyPolicy");
 app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
-
+//app.UseCookiePolicy();
+//app.UseSession();
 app.MapControllers();
 
 app.Run();

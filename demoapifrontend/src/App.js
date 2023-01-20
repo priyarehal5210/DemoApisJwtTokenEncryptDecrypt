@@ -5,10 +5,22 @@ import Register from './Components/Register';
 import Login from './Components/Login';
 import Test from './Components/Test';
 import SingleDataset from './Components/SingleDataset';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 function App() {
+  const[ip,setip]=useState();
+  useEffect(()=>{
+    getuserip();
+  },[])
+  const getuserip=async()=>{
+    const ip=await axios.get("https://ipapi.co/json");
+    console.log(ip.data.ip);
+    setip(ip.data.ip);
+  }
   return (
     <div className="App">
+        
      <Routes>
      <Route path='/'element={<Login/>}/>
       <Route exact path='/employee' element={<Employee/>}></Route>
